@@ -38,20 +38,9 @@ public class PSP03_Ejer2_Cliente {
      * @throws IOException Si hay un error de E/S durante la comunicación.
      */
     private static void manejarConexion(DataOutputStream dos, DataInputStream dis, Scanner sca) throws IOException {
-        String nombreFichero;
-        boolean existeFichero;
-
-        do {
-            System.out.println("Escribe el nombre del fichero");
-            nombreFichero = sca.nextLine();
-            dos.writeUTF(nombreFichero);
-
-            existeFichero = dis.readBoolean();
-
-            if (!existeFichero) {
-                System.out.println("El fichero no existe, por favor, escribe de nuevo.");
-            }
-        } while (!existeFichero);
+        System.out.println("Escribe el nombre del fichero");
+        String nombreFichero = sca.nextLine();
+        dos.writeUTF(nombreFichero);
 
         recibirArchivo(dis);
     }
@@ -66,20 +55,13 @@ public class PSP03_Ejer2_Cliente {
         archivo.createNewFile();
 
         try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(archivo))) {
-            int lee;
-            while ((lee = dis.read()) != -1) {
-                bos.write(lee);
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = dis.read(buffer)) != -1) {
+                bos.write(buffer, 0, bytesRead);
             }
         }
 
-        System.out.println("Archivo recibido correctamente.");
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-            String linea;
-            System.out.println("Contenido del archivo:");
-            while ((linea = br.readLine()) != null) {
-                System.out.println(linea);
-            }
-        }
+        System.out.println("Archivo recibido correctamente."); // Mostramos el contenido del archivo...
     }
 }
